@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>播放影片</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <button id="backBtn">← 返回主畫面</button>
+  <div class="video-wrapper">
+    <iframe id="videoFrame" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+  </div>
+  <script>
+    // 影片網址清單
+    const videos = [
+      "https://www.youtube.com/embed/影片ID1?autoplay=1&rel=0",
+      "https://www.youtube.com/embed/影片ID2?autoplay=1&rel=0",
+      "https://drive.google.com/file/d/XXX/preview",
+      "https://drive.google.com/file/d/YYY/preview"
+    ];
+
+    // 從網址參數取得 index
+    const urlParams = new URLSearchParams(window.location.search);
+    const index = parseInt(urlParams.get('index'), 10);
+
+    // 設定影片
+    const videoFrame = document.getElementById('videoFrame');
+    if (videos[index]) {
+      videoFrame.src = videos[index];
+    } else {
+      // 無效 index → 返回
+      window.location.href = 'index.html';
+    }
+
+    // 返回按鈕
+    document.getElementById('backBtn').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    // 禁止其他按鍵（避免亂跳）
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== "F11") e.preventDefault();
+    });
+  </script>
+</body>
+</html>
