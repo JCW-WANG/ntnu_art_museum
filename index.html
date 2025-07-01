@@ -2,24 +2,17 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>美術館互動影片</title>
-<link rel="stylesheet" href="style.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>互動影片｜美術館</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header">
-    <h1>美術館 互動影片展</h1>
-  </header>
-
-  <main>
-    <div class="buttons" id="buttons"></div>
-
-    <div id="videoContainer" class="hidden">
-      <button id="backBtn">← 返回主畫面</button>
-      <video id="videoPlayer" controls playsinline></video>
-    </div>
-  </main>
-
+  <h1>展場互動影片</h1>
+  <div id="buttons" class="big-buttons"></div>
+  <div id="videoContainer">
+    <video id="videoPlayer" controls></video>
+  </div>
+<script src="particles.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
