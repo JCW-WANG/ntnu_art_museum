@@ -9,35 +9,51 @@
 <body>
   <button id="backBtn">← 返回主畫面</button>
   <div class="video-wrapper">
-    <iframe id="videoFrame" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    <iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
   </div>
   <script>
-    // 影片清單
-const videos = [
-  "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview", //https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/view?usp=drive_link
-  "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview",
-  "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview",
-  "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview"
-];
-
+    // Google Drive 影片清單：4 部都用同一部
+    const videos = [
+      "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview",
+      "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview",
+      "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview",
+      "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview"
+    ];
 
     // 從網址參數取得 index
     const urlParams = new URLSearchParams(window.location.search);
     const index = parseInt(urlParams.get('index'), 10);
 
     const videoFrame = document.getElementById('videoFrame');
+
     if (videos[index]) {
       videoFrame.src = videos[index];
+      // 載入完成後嘗試進全螢幕
+      videoFrame.onload = () => {
+        enterFullscreen();
+      };
     } else {
       window.location.href = 'index.html';
     }
 
-    // 返回
+    // 返回按鈕
     document.getElementById('backBtn').addEventListener('click', () => {
       window.location.href = 'index.html';
     });
 
-    // 禁止右鍵 & 部分按鍵
+    // 嘗試全螢幕
+    function enterFullscreen() {
+      const videoWrapper = document.querySelector('.video-wrapper');
+      if (videoWrapper.requestFullscreen) {
+        videoWrapper.requestFullscreen();
+      } else if (videoWrapper.webkitRequestFullscreen) {
+        videoWrapper.webkitRequestFullscreen();
+      } else if (videoWrapper.msRequestFullscreen) {
+        videoWrapper.msRequestFullscreen();
+      }
+    }
+
+    // 禁止右鍵、防止部分按鍵
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
       if (["F12", "F11", "Control", "Alt", "Tab"].includes(e.key)) e.preventDefault();
