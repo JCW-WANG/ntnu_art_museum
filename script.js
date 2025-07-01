@@ -1,7 +1,7 @@
 const videos = [
   "https://drive.google.com/uc?export=download&id=1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8",
-  "影片2連結",
-  "影片3連結"
+  "https://drive.google.com/uc?export=download&id=1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8,
+  "https://drive.google.com/uc?export=download&id=1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8"
 ];
 
 function playVideo(index) {
