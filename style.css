@@ -27,11 +27,15 @@ button {
   font-size: 1.2em;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, transform 0.15s ease;
 }
 button:hover {
   background: #f0f0f0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+button:active {
+  transform: scale(0.95);
+  background: #e0e0e0;
 }
 #videoContainer {
   margin-top: 40px;
