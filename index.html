@@ -5,17 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>互動影片｜美術館</title>
 <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="header">
     <h1>美術館 互動影片</h1>
   </div>
+
   <div id="buttons" class="gallery-buttons"></div>
-  <div id="videoContainer">
+
+  <div id="videoContainer" class="hidden">
     <button id="backBtn">← 返回主畫面</button>
-    <video id="videoPlayer" controls></video>
+    <video id="videoPlayer" controls playsinline webkit-playsinline></video>
   </div>
-<script src="particles.js"></script>
+
 <script src="script.js"></script>
 </body>
 </html>
