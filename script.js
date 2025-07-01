@@ -35,16 +35,47 @@ async function generateButtons() {
   });
 }
 
-function playVideo(src) {
+async function playVideo(src) {
   const video = document.getElementById('videoPlayer');
   const container = document.getElementById('videoContainer');
   video.src = src;
-  video.load();
-  video.play();
+  await video.load();
   container.style.opacity = 1;
+  video.play();
+
+  // 嘗試全螢幕
+  if (container.requestFullscreen) {
+    container.requestFullscreen();
+  } else if (container.webkitRequestFullscreen) {
+    container.webkitRequestFullscreen();
+  } else if (container.msRequestFullscreen) {
+    container.msRequestFullscreen();
+  }
 }
 
-// 防止右鍵
+function backToMenu() {
+  const video = document.getElementById('videoPlayer');
+  const container = document.getElementById('videoContainer');
+  video.pause();
+  video.currentTime = 0;
+  container.style.opacity = 0;
+
+  // 退出全螢幕
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  }
+}
+
+// 綁定返回按鈕
+if(document.getElementById('backBtn')) {
+  document.getElementById('backBtn').onclick = backToMenu;
+}
+
+// 防右鍵
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.key === 'F12' || e.key === 'F5' || e.key.toLowerCase() === 'r') e.preventDefault();
