@@ -1,4 +1,3 @@
-// 簡單柔和背景粒子動畫
 const canvas = document.createElement('canvas');
 document.body.insertBefore(canvas, document.body.firstChild);
 canvas.style.position = 'fixed';
