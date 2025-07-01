@@ -38,8 +38,8 @@ h1 {
   transition: transform 0.3s ease;
 }
 
-.gallery-buttons button:hover {
-  transform: scale(1.05);
+.gallery-buttons button:active {
+  transform: scale(0.97);
 }
 
 .gallery-buttons button img {
@@ -74,7 +74,7 @@ h1 {
   transition: background 0.3s ease;
 }
 
-#backBtn:hover {
+#backBtn:active {
   background: rgba(0,0,0,0.8);
 }
 
