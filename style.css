@@ -13,50 +13,30 @@ h1 {
   letter-spacing: 2px;
   animation: fadeIn 2s ease forwards;
 }
-
-/* 大按鈕區塊 */
-.big-buttons {
+#buttons {
+  margin: 20px 0;
   display: flex;
   justify-content: center;
-  gap: 40px;
-  margin: 20px 0 40px;
+  gap: 30px;
 }
-
-.big-buttons button {
-  width: 220px;
-  height: 180px;
-  padding: 0;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  background: #fff;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.big-buttons button:hover {
-  transform: scale(1.05);
-}
-
-.big-buttons button img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-}
-
-.big-buttons button span {
-  display: block;
-  padding: 10px 0 8px;
+button {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px 30px;
   font-size: 1.2em;
-  color: #333;
-  user-select: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease, transform 0.15s ease;
 }
-
+button:hover {
+  background: #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+button:active {
+  transform: scale(0.95);
+  background: #e0e0e0;
+}
 #videoContainer {
   margin-top: 40px;
   opacity: 0;
@@ -68,12 +48,10 @@ video {
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px);}
   to { opacity: 1; transform: translateY(0);}
 }
-
 input[type=password], input[type=text] {
   font-size: 1.1em;
   padding: 10px;
