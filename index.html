@@ -2,16 +2,29 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>美術館 互動影片</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 </head>
 <body>
   <div class="header">
     <h1>美術館 互動影片</h1>
   </div>
   <div id="buttons" class="gallery-buttons"></div>
+
   <script src="script.js"></script>
+
+  <script>
+    // 鎖定範圍，防止返回跳出
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener('popstate', () => {
+      window.history.pushState(null, null, window.location.href);
+    });
+    // 禁止右鍵選單
+    window.addEventListener('contextmenu', e => e.preventDefault());
+  </script>
 </body>
 </html>
