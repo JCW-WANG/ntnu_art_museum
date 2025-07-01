@@ -2,13 +2,17 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>影片播放</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
-      margin:0; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;
+      margin:0; background:#000; font-family:'Noto Sans TC', sans-serif;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;
+      -webkit-user-select:none; user-select:none;
     }
     video {
       width:100%; height:100%; object-fit:contain;
@@ -18,11 +22,36 @@
       padding:10px 16px; font-size:1.1em; border-radius:6px; cursor:pointer; z-index:9999;
     }
   </style>
+  <script>
+    // 禁止右鍵
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // 解析網址參數決定影片
+    function getVideoSrc() {
+      const params = new URLSearchParams(window.location.search);
+      const videoId = params.get('video') || '1';
+      const videos = {
+        1: 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&st=05iacy5r&raw=1',
+        2: 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&st=05iacy5r&raw=1',
+        3: 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&st=05iacy5r&raw=1',
+        4: 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&st=05iacy5r&raw=1'
+      };
+      return videos[videoId] || videos[1];
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const videoEl = document.querySelector('video');
+      const sourceEl = document.getElementById('videoSource');
+      sourceEl.src = getVideoSrc();
+      videoEl.load();
+      videoEl.play();
+    });
+  </script>
 </head>
 <body>
   <button class="back-btn" onclick="location.href='index.html'">← 返回</button>
   <video autoplay muted playsinline controls>
-    <source src="https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&st=05iacy5r&raw=1" type="video/mp4">
+    <source id="videoSource" src="" type="video/mp4">
     您的瀏覽器不支援 HTML5 視頻。
   </video>
 </body>
