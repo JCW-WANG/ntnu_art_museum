@@ -1,8 +1,8 @@
 const videos = [
-  "https://www.youtube.com/embed/SHfPMoIzD08",
-  "https://www.youtube.com/embed/SHfPMoIzD08",
-  "https://www.youtube.com/embed/SHfPMoIzD08",
-  "https://www.youtube.com/embed/SHfPMoIzD08"
+  "https://example.com/video1.mp4",
+  "https://example.com/video2.mp4",
+  "https://example.com/video3.mp4",
+  "https://example.com/video4.mp4"
 ];
 
 const thumbnails = [
