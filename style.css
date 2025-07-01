@@ -1,101 +1,79 @@
 body {
   margin: 0;
-  font-family: "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
-  background: #fdfdfb;
+  font-family: "Noto Sans TC", "Helvetica Neue", Helvetica, sans-serif;
+  background: #f5f5f3;
   color: #222;
   text-align: center;
-  padding: 50px 20px;
+  overflow-x: hidden;
+}
+
+.header {
+  padding: 40px 20px 20px;
 }
 h1 {
+  font-weight: 300;
   font-size: 2.5em;
-  margin-bottom: 40px;
-  font-weight: 400;
-  letter-spacing: 2px;
-  animation: fadeIn 2s ease forwards;
+  letter-spacing: 3px;
+  color: #333;
 }
 
-/* 大按鈕區塊 */
-.big-buttons {
+/* 大按鈕容器 */
+.gallery-buttons {
   display: flex;
   justify-content: center;
-  gap: 40px;
-  margin: 20px 0 40px;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin: 40px auto;
+  max-width: 1000px;
 }
 
-.big-buttons button {
-  width: 220px;
-  height: 180px;
-  padding: 0;
+/* 大按鈕設計 */
+.gallery-buttons button {
+  position: relative;
+  width: 250px;
+  height: 160px;
+  border: none;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  background: #fff;
-  border: none;
   cursor: pointer;
-  transition: transform 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  background: #eee;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
 }
 
-.big-buttons button:hover {
+.gallery-buttons button:hover {
   transform: scale(1.05);
 }
 
-.big-buttons button img {
+.gallery-buttons button img {
   width: 100%;
-  height: 140px;
+  height: 100%;
   object-fit: cover;
 }
 
-.big-buttons button span {
-  display: block;
-  padding: 10px 0 8px;
-  font-size: 1.2em;
-  color: #333;
-  user-select: none;
+.gallery-buttons button .label {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  font-size: 1.1em;
+  padding: 8px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
+/* 影片容器 */
 #videoContainer {
-  margin-top: 40px;
+  margin: 40px auto;
+  max-width: 900px;
   opacity: 0;
   transition: opacity 1s ease;
 }
-video {
-  width: 80%;
-  max-width: 800px;
+
+#videoPlayer {
+  width: 90%;
+  max-width: 900px;
   border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px);}
-  to { opacity: 1; transform: translateY(0);}
-}
-
-input[type=password], input[type=text] {
-  font-size: 1.1em;
-  padding: 10px;
-  width: 200px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-#loginBtn, #saveBtn {
-  background: #444;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  font-size: 1.1em;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-#loginBtn:hover, #saveBtn:hover {
-  background: #222;
-}
-#loginMessage, #saveMessage {
-  color: #b22;
-  margin-top: 10px;
+  background: #000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
