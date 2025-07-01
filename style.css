@@ -97,3 +97,52 @@ h1 {
 #backBtn:hover {
   background: rgba(0,0,0,0.8);
 }
+
+/* 管理介面樣式 */
+.admin-container {
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 20px;
+  background: #ffffffcc;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.admin-container h1 {
+  font-weight: 300;
+  margin-bottom: 30px;
+  font-size: 2em;
+  color: #333;
+}
+
+.admin-container input[type="password"],
+.admin-container input[type="text"] {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 1.1em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.admin-container button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1.1em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #2e2b2c;
+  color: #f0eae1;
+  transition: background 0.3s ease;
+}
+
+.admin-container button:hover {
+  background: #44403c;
+}
+
+#loginMessage, #saveMessage {
+  color: #d33;
+  margin-top: 10px;
+}
+
