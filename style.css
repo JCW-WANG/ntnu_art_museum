@@ -21,7 +21,7 @@ h1 {
 .gallery-buttons {
   display: flex;
   justify-content: center;
-  flex-wrap: mowrap;
+  flex-wrap: nowrap;
   gap: 30px;
   margin: 40px auto;
   max-width: 1100px;
