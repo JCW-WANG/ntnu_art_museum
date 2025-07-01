@@ -1,9 +1,14 @@
-// 共用密碼
 const ADMIN_PASSWORD = "1234567890";
 
-// 載入影片資料
 async function loadVideos() {
   try {
+    // 嘗試從 localStorage 讀取更新的影片連結
+    const saved = localStorage.getItem('videos');
+    if (saved) {
+      const arr = JSON.parse(saved);
+      if (arr.length === 3) return arr;
+    }
+    // 若沒 localStorage 或格式不符，則讀取 data.json
     const res = await fetch('data.json?_=' + new Date().getTime());
     if (!res.ok) throw new Error('讀取影片資料失敗');
     const data = await res.json();
@@ -14,12 +19,11 @@ async function loadVideos() {
   }
 }
 
-// 按鈕加圖片和文字
+// 產生大圖按鈕（帶圖片與標籤）
 async function generateButtons() {
   const container = document.getElementById('buttons');
   const videos = await loadVideos();
 
-  // 這裡給三個示範圖片路徑（你換成你自己的圖片網址或路徑）
   const images = [
     'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
     'https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?auto=format&fit=crop&w=400&q=80',
@@ -44,8 +48,6 @@ async function generateButtons() {
   });
 }
 
-
-// 播放影片並淡入
 function playVideo(src) {
   const video = document.getElementById('videoPlayer');
   const container = document.getElementById('videoContainer');
@@ -88,6 +90,14 @@ if(document.getElementById('loginBtn')) {
         if(!res.ok) throw new Error('讀取失敗');
         const data = await res.json();
         videoInputs.forEach((input, i) => input.value = data.videos[i] || '');
+        // 載入 localStorage 覆蓋
+        const saved = localStorage.getItem('videos');
+        if(saved) {
+          const arr = JSON.parse(saved);
+          if(arr.length === 3) {
+            videoInputs.forEach((input, i) => input.value = arr[i]);
+          }
+        }
       } catch(e) {
         videoInputs.forEach(input => input.value = '');
       }
@@ -97,24 +107,9 @@ if(document.getElementById('loginBtn')) {
   };
 
   document.getElementById('saveBtn').onclick = () => {
-    // 只能在客戶端模擬儲存（localStorage），無法寫入 GitHub
     const newVideos = videoInputs.map(i => i.value.trim());
     localStorage.setItem('videos', JSON.stringify(newVideos));
     saveMessage.style.color = 'green';
     saveMessage.textContent = '儲存成功！刷新 index 頁面以載入';
   };
-
-  // 載入 localStorage 儲存的資料（如果有）
-  window.addEventListener('load', () => {
-    const saved = localStorage.getItem('videos');
-    if(saved) {
-      const arr = JSON.parse(saved);
-      if(arr.length === 3) {
-        ['video1','video2','video3'].forEach((id,i) => {
-          const input = document.getElementById(id);
-          if(input) input.value = arr[i];
-        });
-      }
-    }
-  });
 }
