@@ -40,7 +40,7 @@ function playVideo(src) {
 // 防止右鍵與快捷鍵
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
-  if (e.ctrlKey || e.key === 'F12' || e.key === 'F5' || e.key === 'r') {
+  if (e.ctrlKey || e.key === 'F12' || e.key === 'F5' || e.key.toLowerCase() === 'r') {
     e.preventDefault();
   }
 });
