@@ -12,35 +12,34 @@
     <iframe id="videoFrame" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
   </div>
   <script>
-    // 影片網址清單
+    // 影片清單
     const videos = [
-      "https://www.youtube.com/embed/影片ID1?autoplay=1&rel=0",
-      "https://www.youtube.com/embed/影片ID2?autoplay=1&rel=0",
-      "https://drive.google.com/file/d/XXX/preview",
-      "https://drive.google.com/file/d/YYY/preview"
+      "https://drive.google.com/file/d/1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8/preview",
+      "https://www.youtube.com/embed/SHfPMoIzD08?autoplay=1&rel=0",
+      "https://www.youtube.com/embed/your_video_id?autoplay=1&rel=0",
+      "https://www.youtube.com/embed/your_video_id?autoplay=1&rel=0"
     ];
 
     // 從網址參數取得 index
     const urlParams = new URLSearchParams(window.location.search);
     const index = parseInt(urlParams.get('index'), 10);
 
-    // 設定影片
     const videoFrame = document.getElementById('videoFrame');
     if (videos[index]) {
       videoFrame.src = videos[index];
     } else {
-      // 無效 index → 返回
       window.location.href = 'index.html';
     }
 
-    // 返回按鈕
+    // 返回
     document.getElementById('backBtn').addEventListener('click', () => {
       window.location.href = 'index.html';
     });
 
-    // 禁止其他按鍵（避免亂跳）
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== "F11") e.preventDefault();
+    // 禁止右鍵 & 部分按鍵
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (["F12", "F11", "Control", "Alt", "Tab"].includes(e.key)) e.preventDefault();
     });
   </script>
 </body>
