@@ -1,66 +1,60 @@
-const ADMIN_PASSWORD = "1234567890";
+const videos = [
+  "https://drive.google.com/uc?export=download&id=1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8",
+  "https://drive.google.com/uc?export=download&id=1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8",
+  "https://drive.google.com/uc?export=download&id=1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8",
+  "https://drive.google.com/uc?export=download&id=1lVbaarkNlKrcxyvbk9NQKJoQtIuPmaF8"
+];
 
-async function loadVideos() {
-  try {
-    const saved = localStorage.getItem('videos');
-    if (saved) {
-      const arr = JSON.parse(saved);
-      if (arr.length === 3) return arr;
-    }
-    const res = await fetch('data.json?_=' + new Date().getTime());
-    const data = await res.json();
-    return data.videos;
-  } catch(e) {
-    console.error(e);
-    return ["video/video1.mp4", "video/video2.mp4", "video/video3.mp4"];
-  }
-}
+const thumbnails = [
+  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=600&q=80"
+];
 
-async function generateButtons() {
-  const container = document.getElementById('buttons');
-  const videos = await loadVideos();
+const buttonsContainer = document.getElementById("buttons");
+const videoContainer = document.getElementById("videoContainer");
+const videoPlayer = document.getElementById("videoPlayer");
+const backBtn = document.getElementById("backBtn");
 
-  const images = [
-    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=600&q=80'
-  ];
-
-  container.innerHTML = '';
-  videos.forEach((src, idx) => {
-    const btn = document.createElement('button');
-    btn.innerHTML = `<img src="${images[idx]}"><div class="label">作品 ${idx+1}</div>`;
-    btn.onclick = () => playVideo(src);
-    container.appendChild(btn);
+function createButtons() {
+  buttonsContainer.innerHTML = "";
+  videos.forEach((videoUrl, index) => {
+    const btn = document.createElement("button");
+    btn.setAttribute("aria-label", `播放影片 ${index + 1}`);
+    btn.innerHTML = `
+      <img src="${thumbnails[index]}" alt="影片 ${index + 1} 封面圖">
+      <div class="label">作品 ${index + 1}</div>
+    `;
+    btn.addEventListener("click", () => {
+      playVideo(index);
+    });
+    buttonsContainer.appendChild(btn);
   });
 }
 
-async function playVideo(src) {
-  const video = document.getElementById('videoPlayer');
-  const container = document.getElementById('videoContainer');
-  video.src = src;
-  await video.load();
-  container.style.opacity = 1;
-  video.play();
+function playVideo(index) {
+  videoPlayer.src = videos[index];
+  videoPlayer.load();
+  videoPlayer.play();
+  videoContainer.classList.remove("hidden");
+  buttonsContainer.classList.add("hidden");
 
-  // 嘗試全螢幕
-  if (container.requestFullscreen) {
-    container.requestFullscreen();
-  } else if (container.webkitRequestFullscreen) {
-    container.webkitRequestFullscreen();
-  } else if (container.msRequestFullscreen) {
-    container.msRequestFullscreen();
+  if (videoContainer.requestFullscreen) {
+    videoContainer.requestFullscreen();
+  } else if (videoContainer.webkitRequestFullscreen) {
+    videoContainer.webkitRequestFullscreen();
+  } else if (videoContainer.msRequestFullscreen) {
+    videoContainer.msRequestFullscreen();
   }
 }
 
 function backToMenu() {
-  const video = document.getElementById('videoPlayer');
-  const container = document.getElementById('videoContainer');
-  video.pause();
-  video.currentTime = 0;
-  container.style.opacity = 0;
+  videoPlayer.pause();
+  videoPlayer.currentTime = 0;
+  videoContainer.classList.add("hidden");
+  buttonsContainer.classList.remove("hidden");
 
-  // 退出全螢幕
   if (document.exitFullscreen) {
     document.exitFullscreen();
   } else if (document.webkitExitFullscreen) {
@@ -70,16 +64,7 @@ function backToMenu() {
   }
 }
 
-// 綁定返回按鈕
-if(document.getElementById('backBtn')) {
-  document.getElementById('backBtn').onclick = backToMenu;
-}
-
-// 防右鍵
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey || e.key === 'F12' || e.key === 'F5' || e.key.toLowerCase() === 'r') e.preventDefault();
-});
+backBtn.addEventListener("click", backToMenu);
 
 // 初始化
-if(document.getElementById('buttons')) generateButtons();
+createButtons();
