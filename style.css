@@ -21,10 +21,10 @@ h1 {
 .gallery-buttons {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: mowrap;
   gap: 30px;
   margin: 40px auto;
-  max-width: 1000px;
+  max-width: 1100px;
 }
 
 /* 大按鈕設計 */
