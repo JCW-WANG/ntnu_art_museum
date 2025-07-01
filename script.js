@@ -14,18 +14,36 @@ async function loadVideos() {
   }
 }
 
-// 產生影片按鈕
+// 按鈕加圖片和文字
 async function generateButtons() {
   const container = document.getElementById('buttons');
   const videos = await loadVideos();
-  container.innerHTML = "";
+
+  // 這裡給三個示範圖片路徑（你換成你自己的圖片網址或路徑）
+  const images = [
+    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=400&q=80'
+  ];
+
+  container.innerHTML = '';
   videos.forEach((src, idx) => {
     const btn = document.createElement('button');
-    btn.textContent = `作品 ${idx+1}`;
+
+    const img = document.createElement('img');
+    img.src = images[idx] || '';
+    img.alt = `作品 ${idx+1}`;
+    btn.appendChild(img);
+
+    const label = document.createElement('span');
+    label.textContent = `作品 ${idx+1}`;
+    btn.appendChild(label);
+
     btn.onclick = () => playVideo(src);
     container.appendChild(btn);
   });
 }
+
 
 // 播放影片並淡入
 function playVideo(src) {
