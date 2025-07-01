@@ -1,8 +1,8 @@
 const videos = [
   "https://www.youtube.com/embed/SHfPMoIzD08",
-  "https://www.youtube.com/embed/第二支影片ID",
-  "https://www.youtube.com/embed/第三支影片ID",
-  "https://www.youtube.com/embed/第四支影片ID"
+  "https://www.youtube.com/embed/SHfPMoIzD08",
+  "https://www.youtube.com/embed/SHfPMoIzD08",
+  "https://www.youtube.com/embed/SHfPMoIzD08"
 ];
 
 const thumbnails = [
