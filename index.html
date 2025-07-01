@@ -2,32 +2,28 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>美術館互動影片</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="header">
-    <h1>美術館 互動影片</h1>
-  </div>
-  <div class="buttons">
-    <button onclick="playVideo(0)">
-      <img src="cover1.jpg">
-      <div class="label">作品 1</div>
-    </button>
-    <button onclick="playVideo(1)">
-      <img src="cover2.jpg">
-      <div class="label">作品 2</div>
-    </button>
-    <button onclick="playVideo(2)">
-      <img src="cover3.jpg">
-      <div class="label">作品 3</div>
-    </button>
-  </div>
-  <div id="videoContainer">
-    <button id="backBtn">← 返回主畫面</button>
-    <video id="videoPlayer" controls></video>
-  </div>
+  <header class="header">
+    <h1>美術館 互動影片展</h1>
+  </header>
+
+  <main>
+    <div class="buttons" id="buttons"></div>
+
+    <div id="videoContainer" class="hidden">
+      <button id="backBtn">← 返回主畫面</button>
+      <video id="videoPlayer" controls playsinline></video>
+    </div>
+  </main>
+
+  <footer style="text-align:center; margin-bottom: 20px;">
+    <a href="admin.html">館員登入</a>
+  </footer>
+
 <script src="script.js"></script>
 </body>
 </html>
