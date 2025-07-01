@@ -37,12 +37,26 @@
       return videos[videoId] || videos[1];
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    async function enterFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        await elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        await elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        await elem.msRequestFullscreen();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
       const video = document.querySelector('video');
       const source = document.getElementById('videoSource');
       source.src = getVideoSrc();
       video.load();
       video.play();
+
+      // 嘗試全螢幕
+      enterFullscreen();
     });
   </script>
 </head>
