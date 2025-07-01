@@ -24,4 +24,11 @@ function createButtons() {
   });
 }
 
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    window.scrollTo(0, 1); // 向下滾動1像素，嘗試觸發網址列隱藏
+  }, 100);
+});
+
+
 createButtons();
