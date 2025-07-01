@@ -5,24 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理介面｜展場影片</title>
 <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>館員管理介面</h1>
-  <div id="loginSection">
-    <input type="password" id="passwordInput" placeholder="請輸入密碼" />
-    <button id="loginBtn">登入</button>
-    <p id="loginMessage"></p>
-  </div>
-  <div id="adminSection" style="display:none;">
-    <h2>設定影片連結</h2>
-    <label>影片 1 路徑/連結：</label><br/>
-    <input type="text" id="video1" style="width:80%" /><br/><br/>
-    <label>影片 2 路徑/連結：</label><br/>
-    <input type="text" id="video2" style="width:80%" /><br/><br/>
-    <label>影片 3 路徑/連結：</label><br/>
-    <input type="text" id="video3" style="width:80%" /><br/><br/>
-    <button id="saveBtn">儲存設定</button>
-    <p id="saveMessage"></p>
+  <div class="admin-container">
+    <h1>館員管理介面</h1>
+
+    <div id="loginSection">
+      <input type="password" id="passwordInput" placeholder="請輸入密碼" autocomplete="off" />
+      <button id="loginBtn">登入</button>
+      <p id="loginMessage"></p>
+    </div>
+
+    <div id="adminSection" style="display:none;">
+      <h2>設定影片連結</h2>
+      <label>影片 1 路徑/連結：</label><br/>
+      <input type="text" id="video1" style="width:80%" /><br/><br/>
+      <label>影片 2 路徑/連結：</label><br/>
+      <input type="text" id="video2" style="width:80%" /><br/><br/>
+      <label>影片 3 路徑/連結：</label><br/>
+      <input type="text" id="video3" style="width:80%" /><br/><br/>
+      <button id="saveBtn">儲存設定</button>
+      <p id="saveMessage"></p>
+    </div>
   </div>
 <script src="script.js"></script>
 </body>
