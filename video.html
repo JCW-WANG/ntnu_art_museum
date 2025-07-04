@@ -58,16 +58,21 @@
     });
   </script>
   <script>
-  document.addEventListener('contextmenu', e => e.preventDefault()); // 禁止右鍵
+    // 阻止所有滑動、縮放、右鍵、長按等
+    const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','contextmenu','dblclick','selectstart'];
+    events.forEach(evt => {
+      document.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, { passive: false, capture: true });
+    });
+  }
 
-  // 強制禁止縮放
-  document.addEventListener('touchmove', function (event) {
-      if (event.scale !== 1) { event.preventDefault(); }
-  }, { passive: false });
-
-  document.addEventListener('gesturestart', e => e.preventDefault());
-  document.addEventListener('gesturechange', e => e.preventDefault());
-  document.addEventListener('gestureend', e => e.preventDefault());
+  start.addEventListener('click', () => {
+    start.style.display = 'none';
+    video.style.display = 'block';
+    video.muted = false;
+    video.play().catch(e => console.error('播放失敗:', e));
 </script>
 
 </head>
