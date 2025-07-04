@@ -56,6 +56,17 @@
       video.play();
       enterFullscreen(); // 嘗試全螢幕
     });
+
+  document.addEventListener('contextmenu', e => e.preventDefault()); // 禁止右鍵
+
+  // 強制禁止縮放
+  document.addEventListener('touchmove', function (event) {
+      if (event.scale !== 1) { event.preventDefault(); }
+  }, { passive: false });
+
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('gesturechange', e => e.preventDefault());
+  document.addEventListener('gestureend', e => e.preventDefault());
   </script>
 </head>
 <body>
