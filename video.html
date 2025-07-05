@@ -23,6 +23,21 @@
     padding:12px 18px; font-size:1.2em; border-radius:8px; cursor:pointer; z-index:9999;
     font-family:'Noto Sans TC', sans-serif; /* 確保按鈕文字風格一致 */
   }
+  /* 新增的播放觸發覆蓋層 */
+  #initial-play-overlay {
+    position:absolute; top:0; left:0; width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    background-color: rgba(0,0,0,0.7); /* 初始顯示黑色透明背景 */
+    cursor:pointer; z-index:10000; /* 確保在最上層 */
+    transition: opacity 0.5s ease-in-out; /* 淡出效果 */
+  }
+  #initial-play-overlay.hidden {
+    opacity: 0;
+    pointer-events: none; /* 隱藏後允許點擊下層元素 */
+  }
+  #initial-play-overlay svg {
+    width:100px; height:100px; fill:rgba(255,255,255,0.8);
+  }
 </style>
 <script>
   // PWA: 註冊 Service Worker (這頁也需要確保 Service Worker 存在)
@@ -79,36 +94,28 @@
   window.addEventListener('DOMContentLoaded', async () => {
     const video = document.getElementById('mainVideo');
     const source = document.getElementById('videoSource');
+    const initialPlayOverlay = document.getElementById('initial-play-overlay');
 
     // 1. 設定影片來源並載入
     source.src = getVideoSrc();
     video.load();
 
-    // 2. 確保影片已準備好再嘗試播放和全螢幕
-    // `canplaythrough` 事件表示影片可以從頭到尾流暢播放，是個好的時機。
-    // 在 iPad PWA 環境中，由於是點擊 App 圖示進入，通常可以自動播放。
-    video.addEventListener('canplaythrough', async () => {
+    // 2. 監聽初始播放覆蓋層的點擊事件
+    initialPlayOverlay.addEventListener('click', async () => {
+      // 點擊後，隱藏播放覆蓋層
+      initialPlayOverlay.classList.add('hidden');
+
+      // 3. 播放影片和進入全螢幕 (直接由點擊觸發)
       try {
         await video.play();
-        // 將 controls 屬性設定為 false，隱藏影片控制項
-        video.controls = false; 
+        video.controls = false; // 隱藏影片控制項
       } catch(err) {
-        console.log(`影片自動播放失敗: ${err.message}`);
+        console.log(`影片播放失敗: ${err.message}`);
+        // 可以在這裡顯示錯誤訊息給用戶
       }
       
       await enterFullscreen();
-    }, { once: true }); 
-
-    // 以防 canplaythrough 未觸發，若影片已在 readyState，則直接嘗試播放
-    if (video.readyState >= 3) { // HTMLMediaElement.HAVE_FUTURE_DATA
-        try {
-            await video.play();
-            video.controls = false;
-        } catch(err) {
-            console.log(`影片預載入後自動播放失敗: ${err.message}`);
-        }
-        await enterFullscreen();
-    }
+    }, { once: true }); // 確保只觸發一次
 
     // 影片結束時，返回首頁
     video.addEventListener('ended', () => {
@@ -125,6 +132,10 @@
   <source id="videoSource" src="" type="video/mp4">
   您的瀏覽器不支援 HTML5 影片。
 </video>
+
+<div id="initial-play-overlay">
+  <svg viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z" /></svg>
+</div>
 
 </body>
 </html>
