@@ -24,6 +24,21 @@
     padding:12px 18px; font-size:1.2em; border-radius:8px; cursor:pointer; z-index:9999;
     font-family:'Noto Sans TC', sans-serif;
   }
+  /* 初始播放觸發覆蓋層 */
+  #initial-play-overlay {
+    position:absolute; top:0; left:0; width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    background-color: rgba(0,0,0,0.7); /* 初始顯示黑色透明背景 */
+    cursor:pointer; z-index:10000; /* 確保在最上層 */
+    transition: opacity 0.5s ease-in-out; /* 淡出效果 */
+  }
+  #initial-play-overlay.hidden {
+    opacity: 0;
+    pointer-events: none; /* 隱藏後允許點擊下層元素 */
+  }
+  #initial-play-overlay svg {
+    width:100px; height:100px; fill:rgba(255,255,255,0.8);
+  }
 </style>
 <script>
   // PWA: 註冊 Service Worker
@@ -64,7 +79,6 @@
   async function enterFullscreen() {
     const elem = document.documentElement;
     try {
-      // 確保在用戶手勢環境下執行
       if (elem.requestFullscreen) {
         await elem.requestFullscreen();
       } else if (elem.webkitRequestFullscreen) { /* Safari */
@@ -81,26 +95,29 @@
   window.addEventListener('DOMContentLoaded', async () => {
     const video = document.getElementById('mainVideo');
     const source = document.getElementById('videoSource');
+    const initialPlayOverlay = document.getElementById('initial-play-overlay'); // 獲取覆蓋層元素
 
     // 1. 設定影片來源並載入
     source.src = getVideoSrc();
-    video.load(); // 載入影片
+    video.load();
 
-    // 2. 嘗試自動播放和進入全螢幕
-    // 這裡我們直接在 DOMContentLoaded 後嘗試，因為你要求完全自動。
-    // 在 PWA (添加到主畫面) 環境下，以及來自用戶點擊導航的情況下，
-    // Safari 有時會允許這樣做。
-    try {
-      await video.play();
-      video.controls = false; // 隱藏影片控制項
-    } catch(err) {
-      console.log(`影片自動播放失敗 (可能被瀏覽器阻止): ${err.message}`);
-      // 如果自動播放失敗，可以考慮提供一個小小的靜音播放按鈕，讓用戶點擊來開始。
-      // 但根據你的要求，我們預設它會成功。
-    }
+    // 2. 監聽初始播放覆蓋層的點擊事件
+    // 這個點擊將是 Safari 允許自動播放和全螢幕的「直接用戶手勢」
+    initialPlayOverlay.addEventListener('click', async () => {
+      // 點擊後，隱藏播放覆蓋層
+      initialPlayOverlay.classList.add('hidden');
 
-    // 總是嘗試進入全螢幕
-    await enterFullscreen();
+      // 3. 播放影片和進入全螢幕 (直接由點擊觸發)
+      try {
+        await video.play();
+        video.controls = false; // 隱藏影片控制項
+      } catch(err) {
+        console.log(`影片播放失敗 (可能因為未獲取用戶手勢): ${err.message}`);
+        // 這裡可以選擇顯示一個錯誤訊息，或者讓覆蓋層再次出現
+      }
+      
+      await enterFullscreen();
+    }, { once: true }); // 確保這個事件只觸發一次
 
     // 影片結束時，返回首頁
     video.addEventListener('ended', () => {
@@ -117,6 +134,10 @@
   <source id="videoSource" src="" type="video/mp4">
   您的瀏覽器不支援 HTML5 影片。
 </video>
+
+<div id="initial-play-overlay">
+  <svg viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z" /></svg>
+</div>
 
 </body>
 </html>
