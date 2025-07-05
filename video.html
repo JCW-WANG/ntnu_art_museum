@@ -6,68 +6,74 @@
   content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#000000" />
+<link rel="manifest" href="manifest.json" />
 <title>影片播放</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   html, body {
-    margin:0; height:100%; background:#000; font-family:'Noto Sans TC', sans-serif;
-    display:flex; align-items:center; justify-content:center;
-    -webkit-user-select:none; user-select:none;
-    touch-action: none;
+    margin:0; height:100%; background:#000;
+    display:flex; justify-content:center; align-items:center;
+    touch-action: none; user-select:none; -webkit-user-select:none;
   }
   video {
     width:100%; height:100%; object-fit:contain;
   }
-  .back-btn {
-    position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.5); color:#fff; border:none;
-    padding:10px 16px; font-size:1.1em; border-radius:6px; cursor:pointer; z-index:9999;
-  }
 </style>
 </head>
 <body>
-<button class="back-btn" onclick="location.href='index.html'">← 返回</button>
 <video id="myVideo" playsinline controls>
-  <source id="videoSource" src="" type="video/mp4">
+  <source src="https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1" type="video/mp4">
   您的瀏覽器不支援 HTML5 視頻。
 </video>
 
 <script>
+// 註冊 service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(reg => console.log('Service Worker registered', reg))
+    .catch(err => console.error('Service Worker registration failed', err));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','dblclick','selectstart'];
+  const video = document.getElementById('myVideo');
+
+  // 禁止縮放/滑動/選取等
+  const events = ['gesturestart','gesturechange','gestureend','touchstart','touchmove','touchend','dblclick','contextmenu','selectstart'];
   events.forEach(evt => {
     document.addEventListener(evt, e => {
-      e.preventDefault();
-      e.stopPropagation();
-    }, { passive: false, capture: true });
+      e.preventDefault(); e.stopPropagation();
+    }, { passive:false, capture:true });
   });
 
-  const videoId = new URLSearchParams(location.search).get('video') || '1';
-  const videos = {
-    1: 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1'
-  };
-  const video = document.getElementById('myVideo');
-  document.getElementById('videoSource').src = videos[videoId] || videos[1];
-  video.load();
-
-  video.muted = false; // 確保有聲音
+  // 確保有聲音播放
+  video.muted = false;
+  
+  // 嘗試播放並全螢幕
   video.play().then(() => {
-    enterFullscreen();
-  }).catch(e => console.error('播放失敗:', e));
-
-  video.addEventListener('ended', () => {
-    location.href='index.html';
+    enterFullscreen(video);
+  }).catch(err => {
+    console.log('必須互動觸發，點擊影片播放');
+    video.addEventListener('click', () => {
+      video.play().then(() => enterFullscreen(video));
+    }, { once:true });
   });
 
-  async function enterFullscreen() {
-    if (video.requestFullscreen) {
-      await video.requestFullscreen();
-    } else if (video.webkitRequestFullscreen) {
-      await video.webkitRequestFullscreen();
-    } else if (video.msRequestFullscreen) {
-      await video.msRequestFullscreen();
-    }
-  }
+  // 播放完畢自動返回首頁
+  video.addEventListener('ended', () => {
+    location.href = 'index.html';
+  });
 });
+
+// 全螢幕函式
+async function enterFullscreen(element) {
+  if (element.requestFullscreen) {
+    await element.requestFullscreen();
+  } else if (element.webkitRequestFullscreen) {
+    await element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    await element.msRequestFullscreen();
+  }
+}
 </script>
 </body>
 </html>
