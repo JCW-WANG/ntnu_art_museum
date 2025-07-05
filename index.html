@@ -7,7 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>美術館互動影片</title>
-<link rel="manifest" href="manifest.json"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   body {
     margin:0; background:#f5f5f3; font-family:'Noto Sans TC', sans-serif;
@@ -16,25 +17,72 @@
     touch-action: none; /* 更強力地嘗試禁止所有觸摸手勢，包括縮放和滾動 */
     overflow: hidden; /* 防止滾動條出現 */
   }
+
+  /* 容器：確保佔滿整個畫面，且可以堆疊內容 */
+  .view-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* 藝廊部分 */
+  #gallery-view, #video-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.5s ease-out; /* 轉場動畫 */
+  }
+
+  #gallery-view.slide-out-left {
+    transform: translateX(-100%);
+  }
+  #gallery-view.slide-in-left {
+    transform: translateX(0);
+  }
+
+  #video-view.slide-out-right {
+    transform: translateX(100%);
+  }
+  #video-view.slide-in-right {
+    transform: translateX(0);
+  }
+
+  /* 確保初始狀態 */
+  #gallery-view {
+      transform: translateX(0);
+      z-index: 2;
+  }
+  #video-view {
+      transform: translateX(100%); /* 影片預設在右邊，準備滑入 */
+      z-index: 1;
+      background: #000;
+  }
+
   header {
     text-align:center; padding:20px; background:#222; color:#fff;
   }
   header h1 {
     margin:0; font-weight:500; font-size:2.2em; letter-spacing:2px;
   }
-  .gallery {
+  .gallery-grid {
     flex:1;
     display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap:20px; padding:20px;
-    /* 由於 touch-action: none，這裡的滾動可能會被禁用。如果需要滾動，請調整 touch-action */
+    overflow-y: auto;
   }
-  .gallery a {
+  .gallery-item {
     position:relative; display:block; border-radius:12px; overflow:hidden;
     box-shadow:0 4px 15px rgba(0,0,0,0.2); text-decoration:none; color:#fff;
     transition:transform 0.3s ease;
+    cursor: pointer;
   }
-  .gallery a:hover { transform:scale(1.03); }
-  .gallery img {
+  .gallery-item:hover { transform:scale(1.03); }
+  .gallery-item img {
     width:100%; height:100%; object-fit:cover; display:block;
   }
   .label {
@@ -42,12 +90,22 @@
     text-align:center; font-size:1.3em; padding:12px; font-weight:500;
     box-sizing: border-box;
   }
+
+  /* 影片播放部分 */
+  #mainVideo {
+    width:100%; height:100%; object-fit:contain;
+  }
+  .back-btn {
+    position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.5); color:#fff; border:none;
+    padding:12px 18px; font-size:1.2em; border-radius:8px; cursor:pointer; z-index:9999;
+    font-family:'Noto Sans TC', sans-serif;
+  }
 </style>
 <script>
   // PWA: 註冊 Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js') // 注意路徑，如果 service-worker.js 在根目錄則用 /
+      navigator.serviceWorker.register('/service-worker.js')
         .then(registration => {
           console.log('Service Worker 註冊成功:', registration);
         })
@@ -61,31 +119,156 @@
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('gesturestart', e => e.preventDefault());
   document.addEventListener('touchmove', e => {
-    e.preventDefault(); // 阻止所有觸摸移動的預設行為，包括滾動和縮放
+    e.preventDefault();
   }, { passive: false });
+
+  // 影片來源設定
+  const videos = {
+    '1': 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1',
+    '2': 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1',
+    '3': 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1',
+    '4': 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1'
+  };
+
+  // 進入全螢幕函數
+  async function enterFullscreen() {
+    const elem = document.documentElement;
+    try {
+      if (elem.requestFullscreen) {
+        await elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari */
+        await elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE11 */
+        await elem.msRequestFullscreen();
+      }
+    } catch(err) {
+      console.log(`全螢幕失敗: ${err.message} (${err.name})`);
+    }
+  }
+
+  // 顯示藝廊視圖 (從影片頁面返回)
+  function showGalleryView() {
+    const galleryView = document.getElementById('gallery-view');
+    const videoView = document.getElementById('video-view');
+    const video = document.getElementById('mainVideo');
+
+    // 影片視圖滑出到右邊
+    videoView.classList.add('slide-out-right');
+    videoView.classList.remove('slide-in-right');
+
+    // 藝廊視圖從左邊滑入
+    galleryView.classList.remove('slide-out-left');
+    galleryView.classList.add('slide-in-left');
+    galleryView.style.zIndex = 2; // 確保在上方
+
+    // 在動畫完成後執行清理工作
+    setTimeout(() => {
+        video.pause();
+        video.removeAttribute('src'); // 移除影片來源，釋放資源
+        video.load(); // 載入以確保移除來源
+        videoView.style.zIndex = 1; // 將影片視圖放回下方
+        // 如果從全螢幕模式退出，確保退出
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+            document.exitFullscreen ? document.exitFullscreen() :
+            document.webkitExitFullscreen ? document.webkitExitFullscreen() :
+            document.msExitFullscreen ? document.msExitFullscreen() : null;
+        }
+    }, 500); // 與 CSS transition 的時間匹配
+  }
+
+  // 顯示影片播放視圖 (從藝廊選擇影片)
+  async function showVideoView(videoId) {
+    const galleryView = document.getElementById('gallery-view');
+    const videoView = document.getElementById('video-view');
+    const videoSrc = videos[videoId] || videos['1'];
+    const video = document.getElementById('mainVideo');
+
+    // 藝廊視圖滑出到左邊
+    galleryView.classList.add('slide-out-left');
+    galleryView.classList.remove('slide-in-left');
+    
+    // 影片視圖從右邊滑入
+    videoView.classList.remove('slide-out-right');
+    videoView.classList.add('slide-in-right');
+    videoView.style.zIndex = 2; // 確保在上方
+
+    // 延遲播放和全螢幕，給 CSS 動畫一點時間
+    setTimeout(async () => {
+      video.src = videoSrc;
+      video.load();
+      video.autoplay = true; // 設定自動播放
+      video.playsinline = true; // 確保在 Safari 內聯播放
+
+      try {
+        await video.play();
+        console.log('Video play attempt successful (expected to need user gesture for sound)');
+        video.controls = false; // 隱藏控制項
+      } catch(err) {
+        console.log(`Video play attempt failed without gesture: ${err.message}`);
+        // 這裡會失敗是正常的，因為沒有用戶觸摸，但我們將依賴輔助觸控
+      }
+
+      await enterFullscreen();
+      console.log('Fullscreen attempt initiated');
+
+    }, 500); // 延遲約動畫時間，讓畫面切換流暢後再嘗試播放
+
+    // 影片結束時，返回藝廊
+    video.onended = () => {
+      showGalleryView();
+    };
+  }
+
+  // 頁面載入完成後的主邏輯
+  window.addEventListener('DOMContentLoaded', () => {
+    // 為藝廊項目添加點擊事件監聽器
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const videoId = item.dataset.videoId;
+        showVideoView(videoId);
+      });
+    });
+
+    // 為返回按鈕添加事件監聽器
+    document.getElementById('back-button').addEventListener('click', showGalleryView);
+  });
 </script>
 </head>
 <body>
-<header>
-  <h1>美術館 互動影片</h1>
-</header>
-<div class="gallery">
-  <a href="video.html?video=1">
-    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="作品一">
-    <div class="label">作品一</div>
-  </a>
-  <a href="video.html?video=2">
-    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="作品二">
-    <div class="label">作品二</div>
-  </a>
-  <a href="video.html?video=3">
-    <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=600&q=80" alt="作品三">
-    <div class="label">作品三</div>
-  </a>
-  <a href="video.html?video=4">
-    <img src="https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=600&q=80" alt="作品四">
-    <div class="label">作品四</div>
-  </a>
+
+<div class="view-container">
+  <div id="gallery-view" class="slide-in-left">
+    <header>
+      <h1>美術館 互動影片</h1>
+    </header>
+    <div class="gallery-grid">
+      <a href="#" class="gallery-item" data-video-id="1">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="作品一">
+        <div class="label">作品一</div>
+      </a>
+      <a href="#" class="gallery-item" data-video-id="2">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="作品二">
+        <div class="label">作品二</div>
+      </a>
+      <a href="#" class="gallery-item" data-video-id="3">
+        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=600&q=80" alt="作品三">
+        <div class="label">作品三</div>
+      </a>
+      <a href="#" class="gallery-item" data-video-id="4">
+        <img src="https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=600&q=80" alt="作品四">
+        <div class="label">作品四</div>
+      </a>
+    </div>
+  </div>
+
+  <div id="video-view" class="slide-out-right">
+    <button id="back-button" class="back-btn">← 返回</button>
+    <video id="mainVideo" playsinline autoplay> <source id="videoSource" src="" type="video/mp4">
+      您的瀏覽器不支援 HTML5 影片。
+    </video>
+    </div>
 </div>
+
 </body>
 </html>
