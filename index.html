@@ -1,47 +1,63 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="theme-color" content="#000000" />
-<link rel="manifest" href="manifest.json" />
-<title>美術館互動影片</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
-<style>
-  body {
-    margin:0; background:#f5f5f3; font-family:'Noto Sans TC', sans-serif;
-    display:flex; flex-direction:column; height:100vh;
-    -webkit-user-select:none; user-select:none;
-    touch-action: none; /* 禁止捏合手勢 */
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.json" />
+  <title>美術館互動影片</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin:0; background:#f5f5f3; font-family:'Noto Sans TC', sans-serif;
+      display:flex; flex-direction:column; height:100vh;
+      -webkit-user-select:none; user-select:none;
+    }
+    header {
+      text-align:center; padding:20px; background:#222; color:#fff;
+    }
+    header h1 {
+      margin:0; font-weight:500; font-size:2.2em; letter-spacing:2px;
+    }
+    .gallery {
+      flex:1;
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap:20px; padding:20px;
+    }
+    .gallery a {
+      position:relative; display:block; border-radius:12px; overflow:hidden;
+      box-shadow:0 4px 15px rgba(0,0,0,0.2); text-decoration:none; color:#fff;
+      transition:transform 0.3s ease;
+    }
+    .gallery a:hover { transform:scale(1.03); }
+    .gallery img {
+      width:100%; height:100%; object-fit:cover;
+    }
+    .label {
+      position:absolute; bottom:0; width:100%; background:rgba(0,0,0,0.5);
+      text-align:center; font-size:1.3em; padding:10px; font-weight:500;
+    }
+  </style>
+  <script>
+     // 阻止所有滑動、縮放、右鍵、長按等
+    const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','contextmenu','dblclick','selectstart'];
+    events.forEach(evt => {
+      document.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, { passive: false, capture: true });
+    });
   }
-  header {
-    text-align:center; padding:20px; background:#222; color:#fff;
-  }
-  header h1 {
-    margin:0; font-weight:500; font-size:2.2em; letter-spacing:2px;
-  }
-  .gallery {
-    flex:1;
-    display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap:20px; padding:20px;
-  }
-  .gallery a {
-    position:relative; display:block; border-radius:12px; overflow:hidden;
-    box-shadow:0 4px 15px rgba(0,0,0,0.2); text-decoration:none; color:#fff;
-    transition:transform 0.3s ease;
-  }
-  .gallery a:hover { transform:scale(1.03); }
-  .gallery img {
-    width:100%; height:100%; object-fit:cover;
-  }
-  .label {
-    position:absolute; bottom:0; width:100%; background:rgba(0,0,0,0.5);
-    text-align:center; font-size:1.3em; padding:10px; font-weight:500;
-  }
-</style>
+
+  start.addEventListener('click', () => {
+    start.style.display = 'none';
+    video.style.display = 'block';
+    video.muted = false;
+    video.play().catch(e => console.error('播放失敗:', e));
+</script>
+
 </head>
 <body>
 <header>
@@ -65,25 +81,5 @@
     <div class="label">作品四</div>
   </a>
 </div>
-
-<script>
-// PWA: 註冊 service worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(reg => console.log('Service Worker 註冊成功', reg))
-    .catch(err => console.error('Service Worker 註冊失敗', err));
-}
-
-// 禁止縮放/滑動/選取/長按
-document.addEventListener('DOMContentLoaded', () => {
-  const events = ['gesturestart','gesturechange','gestureend','touchstart','touchmove','touchend','dblclick','contextmenu','selectstart'];
-  events.forEach(evt => {
-    document.addEventListener(evt, e => {
-      e.preventDefault();
-      e.stopPropagation();
-    }, { passive:false, capture:true });
-  });
-});
-</script>
 </body>
 </html>
