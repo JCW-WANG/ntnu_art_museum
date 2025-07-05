@@ -10,54 +10,66 @@
   <title>美術館互動影片</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin:0; background:#f5f5f3; font-family:'Noto Sans TC', sans-serif;
-      display:flex; flex-direction:column; height:100vh;
-      -webkit-user-select:none; user-select:none;
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Noto Sans TC', sans-serif;
+      background: #f5f5f3;
+      display: flex;
+      flex-direction: column;
+      touch-action: none; /* 嘗試阻止滑動/縮放 */
+      -webkit-user-select: none;
+      user-select: none;
     }
     header {
-      text-align:center; padding:20px; background:#222; color:#fff;
+      text-align: center;
+      padding: 20px;
+      background: #222;
+      color: #fff;
     }
     header h1 {
-      margin:0; font-weight:500; font-size:2.2em; letter-spacing:2px;
+      margin: 0;
+      font-weight: 500;
+      font-size: 2.2em;
+      letter-spacing: 2px;
     }
     .gallery {
-      flex:1;
-      display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap:20px; padding:20px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
     }
     .gallery a {
-      position:relative; display:block; border-radius:12px; overflow:hidden;
-      box-shadow:0 4px 15px rgba(0,0,0,0.2); text-decoration:none; color:#fff;
-      transition:transform 0.3s ease;
+      position: relative;
+      display: block;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-decoration: none;
+      color: #fff;
+      transition: transform 0.3s ease;
     }
-    .gallery a:hover { transform:scale(1.03); }
+    .gallery a:hover {
+      transform: scale(1.03);
+    }
     .gallery img {
-      width:100%; height:100%; object-fit:cover;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .label {
-      position:absolute; bottom:0; width:100%; background:rgba(0,0,0,0.5);
-      text-align:center; font-size:1.3em; padding:10px; font-weight:500;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      text-align: center;
+      font-size: 1.3em;
+      padding: 10px;
+      font-weight: 500;
     }
   </style>
-  <script>
-     // 阻止所有滑動、縮放、右鍵、長按等
-    const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','contextmenu','dblclick','selectstart'];
-    events.forEach(evt => {
-      document.addEventListener(evt, e => {
-        e.preventDefault();
-        e.stopPropagation();
-      }, { passive: false, capture: true });
-    });
-  }
-
-  start.addEventListener('click', () => {
-    start.style.display = 'none';
-    video.style.display = 'block';
-    video.muted = false;
-    video.play().catch(e => console.error('播放失敗:', e));
-</script>
-
 </head>
 <body>
 <header>
@@ -81,5 +93,21 @@
     <div class="label">作品四</div>
   </a>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const events = [
+    'touchstart', 'touchmove', 'touchend',
+    'gesturestart', 'gesturechange', 'gestureend',
+    'contextmenu', 'dblclick', 'selectstart'
+  ];
+  events.forEach(evt => {
+    document.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, { passive: false, capture: true });
+  });
+});
+</script>
 </body>
 </html>
