@@ -40,25 +40,9 @@
       text-align:center; font-size:1.3em; padding:10px; font-weight:500;
     }
   </style>
-
-   <script>
-     // 阻止所有滑動、縮放、右鍵、長按等
-    const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','contextmenu','dblclick','selectstart'];
-    events.forEach(evt => {
-      document.addEventListener(evt, e => {
-        e.preventDefault();
-        e.stopPropagation();
-      }, { passive: false, capture: true });
-    });
-  }
-
-  start.addEventListener('click', () => {
-    start.style.display = 'none';
-    video.style.display = 'block';
-    video.muted = false;
-    video.play().catch(e => console.error('播放失敗:', e));
-</script>
-
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault()); // 禁止右鍵
+  </script>
 </head>
 <body>
 <header>
