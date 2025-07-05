@@ -1,14 +1,20 @@
 {
   "name": "美術館互動影片",
-  "short_name": "互動影片",
-  "start_url": "./index.html",
-  "display": "standalone",
+  "short_name": "美術館影片",
+  "description": "美術館互動影片展示，提供沉浸式觀影體驗。",
+  "start_url": "./",
+  "display": "fullscreen",
   "background_color": "#000000",
-  "theme_color": "#000000",
+  "theme_color": "#222222",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
