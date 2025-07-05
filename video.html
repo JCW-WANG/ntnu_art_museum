@@ -7,11 +7,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>影片播放</title>
-<style>
+<link rel="manifest" href="manifest.json"> <style>
   body {
     margin:0; background:#000;
     display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;
     -webkit-user-select:none; user-select:none;
+    touch-action: none; /* 更強力地嘗試禁止所有觸摸手勢，包括縮放和滾動 */
+    overflow: hidden; /* 防止滾動條出現 */
   }
   video {
     width:100%; height:100%; object-fit:contain;
@@ -19,23 +21,28 @@
   .back-btn {
     position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.5); color:#fff; border:none;
     padding:12px 18px; font-size:1.2em; border-radius:8px; cursor:pointer; z-index:9999;
-  }
-  #play-overlay {
-    position:absolute; top:0; left:0; width:100%; height:100%;
-    display:flex; align-items:center; justify-content:center;
-    background-color: rgba(0,0,0,0.7);
-    cursor:pointer; z-index:10000;
-  }
-  #play-overlay svg {
-    width:100px; height:100px; fill:rgba(255,255,255,0.8);
+    font-family:'Noto Sans TC', sans-serif; /* 確保按鈕文字風格一致 */
   }
 </style>
 <script>
-  // 禁止右鍵 & 禁止縮放
+  // PWA: 註冊 Service Worker (這頁也需要確保 Service Worker 存在)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js') // 注意路徑
+        .then(registration => {
+          console.log('Service Worker 註冊成功:', registration);
+        })
+        .catch(error => {
+          console.error('Service Worker 註冊失敗:', error);
+        });
+    });
+  }
+
+  // 禁止右鍵 & 禁止所有觸控事件的預設行為
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('gesturestart', e => e.preventDefault());
   document.addEventListener('touchmove', e => {
-    if (e.touches.length > 1) e.preventDefault();
+    e.preventDefault(); // 阻止所有觸摸移動的預設行為，包括滾動和縮放
   }, { passive: false });
 
   // 影片來源設定
@@ -54,7 +61,7 @@
 
   // 進入全螢幕函數
   async function enterFullscreen() {
-    const elem = document.documentElement;
+    const elem = document.documentElement; // 嘗試讓整個文檔進入全螢幕
     try {
       if (elem.requestFullscreen) {
         await elem.requestFullscreen();
@@ -69,32 +76,44 @@
   }
 
   // 頁面載入完成後執行的主邏輯
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', async () => {
     const video = document.getElementById('mainVideo');
     const source = document.getElementById('videoSource');
-    const playOverlay = document.getElementById('play-overlay');
 
     // 1. 設定影片來源並載入
     source.src = getVideoSrc();
     video.load();
 
-    // 2. 監聽「播放覆蓋層」的點擊事件
-    playOverlay.addEventListener('click', async () => {
-      // 隱藏播放按鈕
-      playOverlay.style.display = 'none';
-
-      // 3. 播放影片 (因為是在點擊事件中，所以可以有聲音)
+    // 2. 確保影片已準備好再嘗試播放和全螢幕
+    // `canplaythrough` 事件表示影片可以從頭到尾流暢播放，是個好的時機。
+    // 在 iPad PWA 環境中，由於是點擊 App 圖示進入，通常可以自動播放。
+    video.addEventListener('canplaythrough', async () => {
       try {
         await video.play();
+        // 將 controls 屬性設定為 false，隱藏影片控制項
+        video.controls = false; 
       } catch(err) {
-        alert("影片播放失敗，請聯繫管理員。");
-        console.log(`播放失敗: ${err.message}`);
+        console.log(`影片自動播放失敗: ${err.message}`);
       }
       
-      // 4. 進入全螢幕 (因為是在點擊事件中，所以會被允許)
       await enterFullscreen();
+    }, { once: true }); 
 
-    }, { once: true }); // { once: true } 讓這個事件只觸發一次
+    // 以防 canplaythrough 未觸發，若影片已在 readyState，則直接嘗試播放
+    if (video.readyState >= 3) { // HTMLMediaElement.HAVE_FUTURE_DATA
+        try {
+            await video.play();
+            video.controls = false;
+        } catch(err) {
+            console.log(`影片預載入後自動播放失敗: ${err.message}`);
+        }
+        await enterFullscreen();
+    }
+
+    // 影片結束時，返回首頁
+    video.addEventListener('ended', () => {
+      location.href = 'index.html';
+    });
   });
 </script>
 </head>
@@ -102,14 +121,10 @@
 
 <button class="back-btn" onclick="location.href='index.html'">← 返回</button>
 
-<video id="mainVideo" playsinline controls>
+<video id="mainVideo" playsinline>
   <source id="videoSource" src="" type="video/mp4">
   您的瀏覽器不支援 HTML5 影片。
 </video>
-
-<div id="play-overlay">
-  <svg viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z" /></svg>
-</div>
 
 </body>
 </html>
