@@ -13,6 +13,7 @@
       margin:0; background:#000; font-family:'Noto Sans TC', sans-serif;
       display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;
       -webkit-user-select:none; user-select:none;
+      touch-action: none; /* 阻止滑動縮放 */
     }
     video {
       width:100%; height:100%; object-fit:contain;
@@ -22,10 +23,29 @@
       padding:10px 16px; font-size:1.1em; border-radius:6px; cursor:pointer; z-index:9999;
     }
   </style>
-  <script>
-    document.addEventListener('contextmenu', e => e.preventDefault()); // 禁止右鍵
+</head>
+<body>
+  <button class="back-btn" onclick="location.href='index.html'">← 返回</button>
+  <video autoplay muted playsinline controls>
+    <source id="videoSource" src="" type="video/mp4">
+    您的瀏覽器不支援 HTML5 視頻。
+  </video>
 
-    function getVideoSrc() {
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 禁止右鍵
+      document.addEventListener('contextmenu', e => e.preventDefault());
+
+      // 阻止滑動、縮放等手勢
+      const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','dblclick','selectstart'];
+      events.forEach(evt => {
+        document.addEventListener(evt, e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, { passive: false, capture: true });
+      });
+
+      // 設定影片來源
       const params = new URLSearchParams(window.location.search);
       const videoId = params.get('video') || '1';
       const videos = {
@@ -34,53 +54,28 @@
         3: 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1',
         4: 'https://www.dropbox.com/scl/fi/io07kqottzmwcvrmz61cm/.mp4?rlkey=yzm2032usya1rfb6of67dgpx6&raw=1'
       };
-      return videos[videoId] || videos[1];
-    }
-
-    async function enterFullscreen() {
-      const elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        await elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        await elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        await elem.msRequestFullscreen();
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', async () => {
-      const video = document.querySelector('video');
       const source = document.getElementById('videoSource');
-      source.src = getVideoSrc();
+      source.src = videos[videoId] || videos[1];
+
+      const video = document.querySelector('video');
       video.load();
-      video.play();
-      enterFullscreen(); // 嘗試全螢幕
+
+      // 播放並嘗試全螢幕
+      video.play().then(() => {
+        enterFullscreen();
+      }).catch(e => console.error('播放失敗:', e));
+
+      async function enterFullscreen() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          await elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          await elem.msRequestFullscreen();
+        }
+      }
     });
   </script>
-  <script>
-    // 阻止所有滑動、縮放、右鍵、長按等
-    const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','contextmenu','dblclick','selectstart'];
-    events.forEach(evt => {
-      document.addEventListener(evt, e => {
-        e.preventDefault();
-        e.stopPropagation();
-      }, { passive: false, capture: true });
-    });
-  }
-
-  start.addEventListener('click', () => {
-    start.style.display = 'none';
-    video.style.display = 'block';
-    video.muted = false;
-    video.play().catch(e => console.error('播放失敗:', e));
-</script>
-
-</head>
-<body>
-  <button class="back-btn" onclick="location.href='index.html'">← 返回</button>
-  <video autoplay playsinline controls>
-    <source id="videoSource" src="" type="video/mp4">
-    您的瀏覽器不支援 HTML5 視頻。
-  </video>
 </body>
 </html>
