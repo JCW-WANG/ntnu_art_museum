@@ -56,8 +56,9 @@
       video.play();
       enterFullscreen(); // 嘗試全螢幕
     });
-
-     // 阻止所有滑動、縮放、右鍵、長按等
+  </script>
+  <script>
+    // 阻止所有滑動、縮放、右鍵、長按等
     const events = ['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend','contextmenu','dblclick','selectstart'];
     events.forEach(evt => {
       document.addEventListener(evt, e => {
@@ -72,8 +73,8 @@
     video.style.display = 'block';
     video.muted = false;
     video.play().catch(e => console.error('播放失敗:', e));
-  </script>
-  
+</script>
+
 </head>
 <body>
   <button class="back-btn" onclick="location.href='index.html'">← 返回</button>
